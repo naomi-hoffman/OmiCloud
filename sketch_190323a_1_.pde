@@ -1,5 +1,6 @@
 import org.openkinect.freenect.*;
 import org.openkinect.processing.*;
+import http.requests.*;
 import java.util.Random;
 import Jama.*; 
 
@@ -7,14 +8,13 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import javax.net.ssl.HttpsURLConnection;
 
-
 // Kinect Library object
 Kinect kinect;
 
 final float C_EPSILON = 0.05;
 final float RANSAC_F = 0.75;
 ArrayList<PVector> points;
-ArrayList<PVector> waterline;
+ArrayList<PVector> waterline = new ArrayList<PVector>();
 
 // We'll use a lookup table so that we don't have to repeat the math over and over
 float[] depthLookUp = new float[2048];
@@ -29,7 +29,9 @@ void setup() {
   // Rendering in P3D
   //size(800, 600, P3D);
    size(1280, 520, P3D);
-  
+  PostRequest post = new PostRequest("http://httprocessing.heroku.com");
+  post.addData("name", "Rune");
+post.send();
   //create a kinect object + initialize
   kinect = new Kinect(this);
   kinect.initDepth();
@@ -52,13 +54,16 @@ void setup() {
 
 // send signal to http
 void tellOmi() {
-  try {
+  /*try {
     HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
     con.getContent();
   } catch (IOException e) {
-    e.printStackTrace();
+    e.printStackTrace();/*/
+    PostRequest post = new PostRequest("https://prod-46.eastus.logic.azure.com:443/workflows/6a5966fd5508414d85d083507857d9da/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lQeMYniSgI4cTRzfOlUsiDZ9DMHQCl-YUCkoEUo6TME");
+    post.addData("name", "Rune");
+    post.send();
   }
-}
+
 
 void draw() {
 
@@ -99,7 +104,7 @@ void draw() {
     //image(kinect.getDepthImage(), 0, 0);
   translate(width/4, height/2, -50);
   
-  ArrayList<PVector> planePoints = calibrate();
+  ArrayList<PVector> planePoints = points;
   for (int i = 0; i< planePoints.size(); i++) {
     PVector v = planePoints.get(i);
     stroke(255);
@@ -224,9 +229,19 @@ if(m/N > RANSAC_F) {
 }
 
 //call method. write here.....
+void call(){
+  PostRequest post = new PostRequest("https://prod-46.eastus.logic.azure.com:443/workflows/6a5966fd5508414d85d083507857d9da/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lQeMYniSgI4cTRzfOlUsiDZ9DMHQCl-YUCkoEUo6TME");
+  post.addData("name", "Rune");
+post.send();
+ // put the azure endpoint here
+ /*   url = new URL("https://prod-46.eastus.logic.azure.com:443/workflows/6a5966fd5508414d85d083507857d9da/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lQeMYniSgI4cTRzfOlUsiDZ9DMHQCl-YUCkoEUo6TMEE");
+  } catch (MalformedURLException e) {
+    e.printStackTrace();*/
+  }
+
 
 //calibrate method.
-void calibrate(){
+/*void calibrate(){
   int count = frameCount;
   // filter here!
   ArrayList[] pointClouds = new ArrayList[30];
@@ -234,9 +249,9 @@ void calibrate(){
   pointClouds[frameCount - count] = points;
   }
   
-  PVector bestP0;
-  PVector bestN;
-  ArrayList<PVector> bestInlier;
+  PVector bestP0 = new PVector();
+  PVector bestN = new PVector();
+  ArrayList<PVector> bestInlier = new ArrayList<PVector>();
   for(int i=0; i < 30; i++){
     PVector[] plane = bestPlane(pointClouds[i]);
     PVector P0 = plane[0];
@@ -252,16 +267,21 @@ void calibrate(){
   }
   
   // calibrate waterline
-  
+  waterline.add(bestP0);
+  waterline.add(bestN);
+  waterline.get(0).y = bestP0.y + 10;
   
   return;
-}
+}*/
 
 void keyPressed() {
     // c for calibrate 
   if (key == 'c') {
+   // calibrate();
     // f for fall
-    //call call.
+    call();
   }else if(key == 'f'){
+    // f for fall
+    
   }
 }
