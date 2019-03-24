@@ -1,6 +1,8 @@
 import org.openkinect.freenect.*;
 import org.openkinect.processing.*;
+
 import http.requests.*;
+
 import java.util.Random;
 import Jama.*; 
 
@@ -14,7 +16,10 @@ Kinect kinect;
 final float C_EPSILON = 0.05;
 final float RANSAC_F = 0.75;
 ArrayList<PVector> points;
-ArrayList<PVector> waterline = new ArrayList<PVector>();
+
+
+ArrayList<PVector> waterline;
+
 
 // We'll use a lookup table so that we don't have to repeat the math over and over
 float[] depthLookUp = new float[2048];
@@ -29,9 +34,7 @@ void setup() {
   // Rendering in P3D
   //size(800, 600, P3D);
    size(1280, 520, P3D);
-  PostRequest post = new PostRequest("http://httprocessing.heroku.com");
-  post.addData("name", "Rune");
-post.send();
+
   //create a kinect object + initialize
   kinect = new Kinect(this);
   kinect.initDepth();
@@ -54,13 +57,7 @@ post.send();
 
 // send signal to http
 void tellOmi() {
-  /*try {
-    HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-    con.getContent();
-  } catch (IOException e) {
-    e.printStackTrace();/*/
     PostRequest post = new PostRequest("https://prod-46.eastus.logic.azure.com:443/workflows/6a5966fd5508414d85d083507857d9da/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lQeMYniSgI4cTRzfOlUsiDZ9DMHQCl-YUCkoEUo6TME");
-    post.addData("name", "Rune");
     post.send();
   }
 
@@ -104,7 +101,9 @@ void draw() {
     //image(kinect.getDepthImage(), 0, 0);
   translate(width/4, height/2, -50);
   
+
   ArrayList<PVector> planePoints = points;
+
   for (int i = 0; i< planePoints.size(); i++) {
     PVector v = planePoints.get(i);
     stroke(255);
@@ -275,13 +274,10 @@ post.send();
 }*/
 
 void keyPressed() {
-    // c for calibrate 
+    // c for call 
   if (key == 'c') {
-   // calibrate();
-    // f for fall
     call();
-  }else if(key == 'f'){
-    // f for fall
-    
+  }else if(key == 'k'){
+    // k for calibrate for future implementation 
   }
 }
