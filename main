@@ -144,7 +144,7 @@ PVector v21 = P2.sub(P1);
 PVector v23 = P3.sub(P2);
 return v21.cross(v23);
 }
-
+// Emily does math.
 // findInliers
 ArrayList<PVector> findInliers(PVector P0, PVector n, double e, ArrayList<PVector> pz){
   ArrayList<PVector> inliers = new ArrayList<PVector>();
@@ -158,8 +158,48 @@ for(int i=0; i < pz.size(); i++){
 }
 return inliers;
 }
+//Emily does more math!
+PVector[] findBestPlane (ArrayList<PVector> inliers){
+int size = inliers.size();
+PVector p0 = new PVector(0, 0, 0);
+double[][] M = new double[size][3];
+  for(int i=0; i<size; i++){
+    PVector p = inliers.get(i);
+    p0 = p0.add(p);
+  }
 
-//insert fit best plane here
+  p0 = p0.div(size);
+//create double array from inliers
+  for(int i=0; i<size; i++){
+    PVector p = inliers.get(i);
+    p = p.sub(p0);
+    M[i] = new double[]{p.x, p.y, p.z};
+  }
+  // create matrix from double array
+  Matrix mat = new Matrix(M);
+  //MTM
+  mat = mat.transpose().times(mat);
+  EigenvalueDecomposition eigs = mat.eig();
+//find min eigenvalue and index
+  double[] eigenvalues = eigs.getRealEigenvalues();
+  double val = eigenvalues[0];
+  int idx = 0;
+  for(int j=1; j<eigenvalues.length; j++){
+    if(eigenvalues[j]<val){
+      val = eigenvalues[j];
+      idx = j;
+    }
+  }
+  //eigenvalue matrix
+Matrix mat2 = eigs.getV();
+//find points from min idx and make PVector
+float v01 = (float)mat2.get(idx, 0);
+float v02 = (float)mat2.get(idx, 1);
+float v03 = (float)mat2.get(idx, 2);
+PVector normalVector = new PVector(v01, v02, v03);
+PVector[] ret = new PVector[] {p0, normalVector};
+return ret;
+}
 
 PVector[] bestPlane(ArrayList<PVector> pointCloud){
 while(true){
