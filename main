@@ -221,3 +221,44 @@ if(m/N > RANSAC_F) {
 }
 }
 }
+
+//Emily is tired of math.
+//A-B
+//A: base
+//B: current room
+ArrayList<PVector> aMinusB(ArrayList<PVector> pointCloudB, ArrayList<PVector> pointCloudClean, double E){
+  ArrayList<PVector> grandma = new ArrayList<PVector>();
+  for(int i = 0; i < pointCloudB.size(); i++){
+    //A-B
+    PVector pv1 = pointCloudClean.get(i);
+    PVector pv2 = pointCloudB.get(i);
+    if(pv1.sub(pv2) > E){
+      grandma.add(pv2);
+    }
+  }
+  return grandma;
+}
+
+//Grandma above waterline
+boolean isGrandmaDrowning(PVector[] waterline, ArrayList<PVector>() gma, double E){
+//distance point plane
+int belowCount = 0;
+int aboveCount = 0;
+//count how much of grandma is above or below the waterline
+for(int i = 0; i < gma.size(); i++){
+  PVector sub = gma.get(i).sub(waterline[0]);
+  double dot = waterline[1].dot(sub);
+  if(dot<=0){
+    belowCount++;
+  }
+  else{
+    aboveCount++;
+  }
+}
+//ratio of point above and below
+double ratio = belowCount/aboveCount;
+if(ratio > E){
+  return true;
+}
+return false;
+}
