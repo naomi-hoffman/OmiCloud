@@ -1,0 +1,14 @@
+Purpose & Inspiration  
+ face today is the need to care for our aging population.  People are living longer than ever before, meaning health conditions that previously only affected a small portion of the population are becoming increasingly common.  Tens of thousands of these individuals die as a direct result of falling.  In fact, falling is the leading cause of fatal injury among older adults.  For every 
+
+Passion & Solution
+It is as senior citizens complete day-to-day activities that their most serious injuries occur. These falls can worsen previous injuries and can cause newer, more serious ones. Additionally, less than half of the falls suffered by elderly people are reported. Moved by these statistics, and the stories we shared with each other about our grandparents, our team was driven to create a solution.  We decided to create the OmiCloud: an innovative technology that analyzes point-cloud data using the paper, Fast Sampling Plane Filtering [Biswas, 2012], and utilizes the cloud-platform Azure, to revolutionize senior health.
+
+Srruggles & Outcomes
+-------
+  -- 0 0 0 0 0 0 0 0 0 1-
+ The endproduct of these struggles led us to navigate and understand Microsoft's cloud Platform Azure in the time given, working extensively with sensor hardware, and explored multiple endpoint calls to azure and twilio from a java file. We are proud that we have over 200 lines of working code along with Processing. 
+  
+Future Implementations
+With the new Kinect v3 coming out, we can implement Omi Cloud to work specifically with Azure for a smoothter process and transition through platforms and further utilize location services to give the most accurate emergency services along with a reply option upon replying “HELP” or “OKAY”, is either pointed to emergency phone number for further assistance or nothing.
+

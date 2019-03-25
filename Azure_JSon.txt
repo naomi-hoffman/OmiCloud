@@ -1,0 +1,51 @@
+{
+    $connections {
+        value {
+            twilio {
+                connectionId subscriptions2cc3ff16-568c-41ec-962b-3234a9fae49cresourceGroupsOmiCloudprovidersMicrosoft.Webconnectionstwilio,
+                connectionName twilio,
+                id subscriptions2cc3ff16-568c-41ec-962b-3234a9fae49cprovidersMicrosoft.WeblocationseastusmanagedApistwilio
+            }
+        }
+    },
+    definition {
+        $schema httpsschema.management.azure.comprovidersMicrosoft.Logicschemas2016-06-01workflowdefinition.json#,
+        actions {
+            Send_Text_Message_(SMS) {
+                inputs {
+                    body {
+                        body OmiCloud has detected a fall in your grandparents' home! Call their local police department's number for help (360) 487-7355,
+                        from +1971-351-0210,
+                        to +1503-860-3467
+                    },
+                    host {
+                        connection {
+                            name @parameters('$connections')['twilio']['connectionId']
+                        }
+                    },
+                    method post,
+                    path Messages.json
+                },
+                runAfter {},
+                type ApiConnection
+            }
+        },
+        contentVersion 1.0.0.0,
+        outputs {},
+        parameters {
+            $connections {
+                defaultValue {},
+                type Object
+            }
+        },
+        triggers {
+            manual {
+                inputs {
+                    schema {}
+                },
+                kind Http,
+                type Request
+            }
+        }
+    }
+}

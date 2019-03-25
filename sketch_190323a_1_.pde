@@ -1,5 +1,8 @@
 import org.openkinect.freenect.*;
 import org.openkinect.processing.*;
+
+import http.requests.*;
+
 import java.util.Random;
 import Jama.*; 
 
@@ -7,14 +10,16 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import javax.net.ssl.HttpsURLConnection;
 
-
 // Kinect Library object
 Kinect kinect;
 
 final float C_EPSILON = 0.05;
 final float RANSAC_F = 0.75;
 ArrayList<PVector> points;
+
+
 ArrayList<PVector> waterline;
+
 
 // We'll use a lookup table so that we don't have to repeat the math over and over
 float[] depthLookUp = new float[2048];
@@ -29,7 +34,7 @@ void setup() {
   // Rendering in P3D
   //size(800, 600, P3D);
    size(1280, 520, P3D);
-  
+
   //create a kinect object + initialize
   kinect = new Kinect(this);
   kinect.initDepth();
@@ -52,13 +57,10 @@ void setup() {
 
 // send signal to http
 void tellOmi() {
-  try {
-    HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-    con.getContent();
-  } catch (IOException e) {
-    e.printStackTrace();
+    PostRequest post = new PostRequest("https://prod-46.eastus.logic.azure.com:443/workflows/6a5966fd5508414d85d083507857d9da/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lQeMYniSgI4cTRzfOlUsiDZ9DMHQCl-YUCkoEUo6TME");
+    post.send();
   }
-}
+
 
 void draw() {
 
@@ -99,7 +101,9 @@ void draw() {
     //image(kinect.getDepthImage(), 0, 0);
   translate(width/4, height/2, -50);
   
-  ArrayList<PVector> planePoints = calibrate();
+
+  ArrayList<PVector> planePoints = points;
+
   for (int i = 0; i< planePoints.size(); i++) {
     PVector v = planePoints.get(i);
     stroke(255);
@@ -223,30 +227,98 @@ if(m/N > RANSAC_F) {
 }
 }
 
-//call method. write here.....
-
-//calibrate method.
-ArrayList<PVector> calibrate(){
-  int count = frameCount;
-  ArrayList<PVector> instance = new ArrayList<PVector>();
-  ArrayList<ArrayList<PVector>> pointClouds = new ArrayList<ArrayList<PVector>>();
-  // filter here!
-  while(frameCount - count < 30){
-  pointClouds.add(instance);
+//Emily is tired of math.
+//A-B
+//A: base
+//B: current room
+ArrayList<PVector> aMinusB(ArrayList<PVector> pointCloudB, ArrayList<PVector> pointCloudClean, double E){
+  ArrayList<PVector> grandma = new ArrayList<PVector>();
+  for(int i = 0; i < pointCloudB.size(); i++){
+    //A-B
+    PVector pv1 = pointCloudClean.get(i);
+    PVector pv2 = pointCloudB.get(i);
+    if(pv1.sub(pv2) > E){
+      grandma.add(pv2);
+    }
   }
-  PVector[] plane = bestPlane(points);
-  PVector P0 = plane[0];
-  PVector n = plane[1];
-  ArrayList<PVector> planePoints = findInliers(P0, n, C_EPSILON, points);
-  
-  return planePoints;
+  return grandma;
 }
 
+//Grandma above waterline
+boolean isGrandmaDrowning(PVector[] waterline, ArrayList<PVector>() gma, double E){
+//distance point plane
+int belowCount = 0;
+int aboveCount = 0;
+//count how much of grandma is above or below the waterline
+for(int i = 0; i < gma.size(); i++){
+  PVector sub = gma.get(i).sub(waterline[0]);
+  double dot = waterline[1].dot(sub);
+  if(dot<=0){
+    belowCount++;
+  }
+  else{
+    aboveCount++;
+  }
+}
+//ratio of point above and below
+double ratio = belowCount/aboveCount;
+if(ratio > E){
+  return true;
+}
+return false;
+}
+
+//call method. write here.....
+void call(){
+  PostRequest post = new PostRequest("https://prod-46.eastus.logic.azure.com:443/workflows/6a5966fd5508414d85d083507857d9da/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lQeMYniSgI4cTRzfOlUsiDZ9DMHQCl-YUCkoEUo6TME");
+  post.addData("name", "Rune");
+post.send();
+ // put the azure endpoint here
+ /*   url = new URL("https://prod-46.eastus.logic.azure.com:443/workflows/6a5966fd5508414d85d083507857d9da/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lQeMYniSgI4cTRzfOlUsiDZ9DMHQCl-YUCkoEUo6TMEE");
+  } catch (MalformedURLException e) {
+    e.printStackTrace();*/
+  }
+
+
+//calibrate method.
+/*void calibrate(){
+  int count = frameCount;
+  // filter here!
+  ArrayList[] pointClouds = new ArrayList[30];
+  while(frameCount - count < 30){
+  pointClouds[frameCount - count] = points;
+  }
+  
+  PVector bestP0 = new PVector();
+  PVector bestN = new PVector();
+  ArrayList<PVector> bestInlier = new ArrayList<PVector>();
+  for(int i=0; i < 30; i++){
+    PVector[] plane = bestPlane(pointClouds[i]);
+    PVector P0 = plane[0];
+    PVector n = plane[1];
+    ArrayList<PVector> planePoints = findInliers(P0, n, C_EPSILON, points);
+    
+   //which best plane to go with?
+   if(i == 0 || planePoints.size() >= bestInlier.size()){
+    bestP0 = P0;
+    bestN = n;
+    bestInlier = planePoints;
+    }
+  }
+  
+  // calibrate waterline
+  waterline.add(bestP0);
+  waterline.add(bestN);
+  waterline.get(0).y = bestP0.y + 10;
+  
+  return;
+}*/
+
 void keyPressed() {
-    // c for calibrate 
+    // c for call 
   if (key == 'c') {
-    // f for fall
-    //call call.
-  }else if(key == 'f'){
+    call();
+  }else if(key == 'k'){
+    // k for calibrate for future implementation 
   }
 }
